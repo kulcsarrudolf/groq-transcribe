@@ -56,6 +56,7 @@
       padding: .9rem 1rem; border-radius: 10px; margin-bottom: 1.25rem;
     }
     .filename { color: var(--muted); font-size: .9rem; }
+    .hint { margin: .5rem 0 0; font-size: .85rem; }
     footer { color: var(--muted); font-size: .85rem; text-align: center; margin-top: 1rem; }
     a { color: var(--accent-hover); }
   </style>
@@ -80,11 +81,20 @@
             ('en', 'English'), ('fr', 'French'), ('de', 'German'),
             ('ro', 'Romanian'), ('hu', 'Hungarian'), ('pt', 'Portuguese')
           ] %}
-          <select id="language" name="language">
+          <select id="language" name="language" onchange="toggleOther()">
             {% for code, label in languages %}
             <option value="{{ code }}"{% if code == default_language %} selected{% endif %}>{{ label }}</option>
             {% endfor %}
+            <option value="other">Other…</option>
           </select>
+          <input id="language_other" type="text" name="language_other"
+                 placeholder="ISO-639-1 code, e.g. es" maxlength="10"
+                 style="display:none; margin-top:.5rem;">
+          <p class="hint">
+            <a href="https://console.groq.com/docs/speech-to-text" target="_blank" rel="noopener">
+              Supported languages (Groq)
+            </a>
+          </p>
         </div>
         <div class="check">
           <input id="timestamps" type="checkbox" name="timestamps" value="true">
@@ -109,6 +119,15 @@
   </main>
 
   <script>
+    function toggleOther() {
+      const sel = document.getElementById('language');
+      const other = document.getElementById('language_other');
+      const show = sel.value === 'other';
+      other.style.display = show ? 'block' : 'none';
+      other.required = show;
+    }
+    document.addEventListener('DOMContentLoaded', toggleOther);
+
     function copyTranscript() {
       const t = document.getElementById('transcript');
       navigator.clipboard.writeText(t.value);

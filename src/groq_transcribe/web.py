@@ -39,8 +39,11 @@ def do_transcribe(
     request: Request,
     audio: UploadFile,
     language: str = Form(""),
+    language_other: str = Form(""),
     timestamps: bool = Form(False),
 ) -> HTMLResponse:
+    if language.strip().lower() == "other":
+        language = language_other
     language = (language or config.DEFAULT_LANGUAGE).strip().lower()
     context: dict = {"default_language": language, "filename": audio.filename}
 
