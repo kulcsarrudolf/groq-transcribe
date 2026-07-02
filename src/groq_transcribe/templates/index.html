@@ -29,7 +29,7 @@
       border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem;
     }
     label { display: block; font-weight: 600; margin: .75rem 0 .35rem; }
-    input[type=file], input[type=text] {
+    input[type=file], input[type=text], select {
       width: 100%; padding: .6rem .7rem; color: var(--text);
       background: #0f1218; border: 1px solid var(--border); border-radius: 8px;
     }
@@ -75,9 +75,16 @@
              accept="audio/*,.mp3,.m4a,.wav,.ogg,.flac,.webm" required>
       <div class="row">
         <div>
-          <label for="language">Language (ISO-639-1)</label>
-          <input id="language" type="text" name="language"
-                 value="{{ default_language }}" maxlength="5">
+          <label for="language">Language</label>
+          {% set languages = [
+            ('en', 'English'), ('fr', 'French'), ('de', 'German'),
+            ('ro', 'Romanian'), ('hu', 'Hungarian'), ('pt', 'Portuguese')
+          ] %}
+          <select id="language" name="language">
+            {% for code, label in languages %}
+            <option value="{{ code }}"{% if code == default_language %} selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
         </div>
         <div class="check">
           <input id="timestamps" type="checkbox" name="timestamps" value="true">
