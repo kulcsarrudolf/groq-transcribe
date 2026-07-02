@@ -11,6 +11,9 @@ dependencies = [
     "python-dotenv>=1.0.0",
 ]
 
+[project.scripts]
+groq-transcribe = "groq_transcribe.cli:main"
+
 [dependency-groups]
 dev = [
     "pytest>=8.0.0",
