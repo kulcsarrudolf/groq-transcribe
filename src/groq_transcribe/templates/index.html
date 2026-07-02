@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>groq-transcribe</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --panel: #181b22;
+      --border: #2a2f3a;
+      --text: #e6e8eb;
+      --muted: #9aa3af;
+      --accent: #f55036;
+      --accent-hover: #ff6a52;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 2rem 1rem;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; justify-content: center;
+    }
+    main { width: 100%; max-width: 720px; }
+    h1 { font-size: 1.5rem; margin: 0 0 .25rem; }
+    p.sub { color: var(--muted); margin: 0 0 1.5rem; }
+    form, .result {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem;
+    }
+    label { display: block; font-weight: 600; margin: .75rem 0 .35rem; }
+    input[type=file], input[type=text] {
+      width: 100%; padding: .6rem .7rem; color: var(--text);
+      background: #0f1218; border: 1px solid var(--border); border-radius: 8px;
+    }
+    .row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+    .row > div { flex: 1; min-width: 160px; }
+    .check { display: flex; align-items: center; gap: .5rem; margin-top: 1.4rem; }
+    .check label { margin: 0; }
+    button {
+      margin-top: 1.25rem; padding: .65rem 1.1rem; border: none; cursor: pointer;
+      background: var(--accent); color: #fff; font-weight: 600; font-size: 1rem;
+      border-radius: 8px;
+    }
+    button:hover { background: var(--accent-hover); }
+    button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    textarea {
+      width: 100%; min-height: 260px; margin-top: .5rem; padding: .8rem;
+      color: var(--text); background: #0f1218; border: 1px solid var(--border);
+      border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: .9rem; line-height: 1.5; resize: vertical;
+    }
+    .actions { display: flex; gap: .6rem; }
+    .error {
+      background: #2a1416; border: 1px solid #6b2020; color: #ffb4a8;
+      padding: .9rem 1rem; border-radius: 10px; margin-bottom: 1.25rem;
+    }
+    .filename { color: var(--muted); font-size: .9rem; }
+    footer { color: var(--muted); font-size: .85rem; text-align: center; margin-top: 1rem; }
+    a { color: var(--accent-hover); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>groq-transcribe</h1>
+    <p class="sub">Audio to transcript, powered by Groq Whisper. Runs locally.</p>
+
+    {% if error %}
+    <div class="error"><strong>Transcription failed:</strong> {{ error }}</div>
+    {% endif %}
+
+    <form action="/transcribe" method="post" enctype="multipart/form-data">
+      <label for="audio">Audio file</label>
+      <input id="audio" type="file" name="audio"
+             accept="audio/*,.mp3,.m4a,.wav,.ogg,.flac,.webm" required>
+      <div class="row">
+        <div>
+          <label for="language">Language (ISO-639-1)</label>
+          <input id="language" type="text" name="language"
+                 value="{{ default_language }}" maxlength="5">
+        </div>
+        <div class="check">
+          <input id="timestamps" type="checkbox" name="timestamps" value="true">
+          <label for="timestamps">Include timestamps</label>
+        </div>
+      </div>
+      <button type="submit">Transcribe</button>
+    </form>
+
+    {% if transcript is defined %}
+    <div class="result">
+      {% if filename %}<p class="filename">Transcript of <strong>{{ filename }}</strong></p>{% endif %}
+      <textarea id="transcript" readonly>{{ transcript }}</textarea>
+      <div class="actions">
+        <button type="button" class="secondary" onclick="copyTranscript()">Copy</button>
+        <button type="button" class="secondary" onclick="downloadTranscript()">Download .txt</button>
+      </div>
+    </div>
+    {% endif %}
+
+    <footer>Local only. Set <code>GROQ_API_KEY</code> in your environment.</footer>
+  </main>
+
+  <script>
+    function copyTranscript() {
+      const t = document.getElementById('transcript');
+      navigator.clipboard.writeText(t.value);
+    }
+    function downloadTranscript() {
+      const t = document.getElementById('transcript').value;
+      const blob = new Blob([t], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'transcript.txt';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+  </script>
+</body>
+</html>

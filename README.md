@@ -65,6 +65,19 @@ Options:
 | `--timestamps` | Emit `[start - end]` segment lines instead of plain text. |
 | `--stdout` | Print the transcript instead of writing a file. |
 
+## Web UI
+
+Start the local web app and open it in your browser:
+
+```bash
+uv run groq-transcribe-web
+# then open http://127.0.0.1:8000
+```
+
+Upload an audio file, pick a language, and get the transcript back with copy
+and download buttons. It binds to `127.0.0.1` only; override with the `HOST`
+and `PORT` environment variables if needed.
+
 ## Usage as a library
 
 ```python

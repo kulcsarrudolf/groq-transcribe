@@ -9,10 +9,15 @@ authors = [{ name = "kulcsarrudolf" }]
 dependencies = [
     "groq>=0.11.0",
     "python-dotenv>=1.0.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "python-multipart>=0.0.9",
+    "jinja2>=3.1.0",
 ]
 
 [project.scripts]
 groq-transcribe = "groq_transcribe.cli:main"
+groq-transcribe-web = "groq_transcribe.web:main"
 
 [dependency-groups]
 dev = [
