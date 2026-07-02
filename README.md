@@ -40,6 +40,31 @@ required; a local `.env` file (git-ignored) is loaded automatically.
 | `COMPRESS_SAMPLE_RATE` | no | `16000` | ffmpeg sample rate when compressing. |
 | `COMPRESS_BITRATE` | no | `48k` | ffmpeg audio bitrate when compressing. |
 
+## Command-line usage
+
+Transcribe a file directly:
+
+```bash
+uv run groq-transcribe talk.mp3 -l en
+# -> writes talk.en.txt
+```
+
+Run with no file to go interactive (it prompts for the file and language):
+
+```bash
+uv run groq-transcribe
+```
+
+Options:
+
+| Flag | Description |
+| --- | --- |
+| `audio_path` | Path to the audio file. Omit to run interactively. |
+| `-l`, `--language` | Source language (ISO-639-1). Defaults to `TRANSCRIBE_DEFAULT_LANGUAGE`. |
+| `-o`, `--output` | Output file. Default: `<audio-stem>.<language>.txt`. |
+| `--timestamps` | Emit `[start - end]` segment lines instead of plain text. |
+| `--stdout` | Print the transcript instead of writing a file. |
+
 ## Usage as a library
 
 ```python
