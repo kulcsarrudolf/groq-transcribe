@@ -49,6 +49,19 @@ def test_transcribe_with_timestamps(mocker, client):
     assert "[0.00s - 1.00s] hello world" in resp.text
 
 
+def test_transcribe_other_language_uses_custom_field(mocker, client):
+    tx = mocker.patch.object(web, "transcribe", return_value=_RESULT)
+    files = {"audio": ("clip.mp3", io.BytesIO(b"fake"), "audio/mpeg")}
+
+    resp = client.post(
+        "/transcribe", files=files, data={"language": "other", "language_other": "ES"}
+    )
+
+    assert resp.status_code == 200
+    # The custom code is passed through (lowercased) to the engine.
+    assert tx.call_args.args[1] == "es"
+
+
 def test_transcribe_shows_error(mocker, client):
     mocker.patch.object(web, "transcribe", side_effect=ValueError("GROQ_API_KEY is not set"))
     files = {"audio": ("clip.mp3", io.BytesIO(b"fake"), "audio/mpeg")}
